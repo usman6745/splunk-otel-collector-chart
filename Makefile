@@ -15,6 +15,20 @@ render:
 		rm -rf "$$dir"/splunk-otel-collector; \
 	done
 
+	# Platform Logs
+	dir=rendered/manifests/platform-logs-with-o11y-metrics-and-traces; \
+	mkdir -p "$$dir"; \
+	helm template \
+		--namespace default \
+		--values rendered/values.yaml \
+		--output-dir "$$dir" \
+		--set splunkObservability.logsEnabled=false \
+    --set splunkPlatform.logsEnabled=true,splunkPlatform.token=changeme,splunkPlatform.endpoint=https://changeme.com \
+		default helm-charts/splunk-otel-collector; \
+	mv "$$dir"/splunk-otel-collector/templates/* "$$dir"; \
+	rm -rf "$$dir"/splunk-otel-collector
+#     --set clusterReceiver.config.exporters.splunk_hec/o11y.log_data_enabled=wokkawokka \
+
 	# Default configuration deployment.
 	dir=rendered/manifests/agent-only; \
 	mkdir -p "$$dir"; \
